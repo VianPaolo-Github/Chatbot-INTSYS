@@ -1,0 +1,49 @@
+{
+    "intents": [
+      {
+        "tag": "greeting",
+        "patterns": ["Hi", "Hello", "Hey", "Good day", "Greetings"],
+        "responses": ["Hello! How can I assist you with your academic journey today?", "Hi there! Need help with enrollment?"]
+      },
+      {
+        "tag": "goodbye",
+        "patterns": ["Goodbye", "See you later", "Bye", "Talk to you soon"],
+        "responses": ["Goodbye! Feel free to come back with any questions.", "Take care and good luck with your studies!"]
+      },
+      {
+        "tag": "course_inquiry",
+        "patterns": ["Tell me about computer science", "What courses are available?", "Do you offer psychology?", "List available programs"],
+        "responses": ["We offer programs like Computer Science, Psychology, Business Administration, and more. Would you like details on a specific one?"]
+      },
+      {
+        "tag": "enrollment_process",
+        "patterns": ["How do I enroll?", "Steps to apply", "Admission process", "How to register?"],
+        "responses": ["To enroll, start by completing the online application form, then submit the required documents and await confirmation."]
+      },
+      {
+        "tag": "important_dates",
+        "patterns": ["When does enrollment start?", "Application deadline?", "Key dates?", "When does semester start?"],
+        "responses": ["The enrollment for the Fall semester opens May 1st and closes August 15th. Classes begin on September 5th."]
+      },
+      {
+        "tag": "contact_info",
+        "patterns": ["How can I contact admissions?", "Email for help?", "Phone number for support?", "Contact details"],
+        "responses": ["You can reach the admissions office at admissions@university.edu or call (123) 456-7890."]
+      },
+      {
+        "tag": "documents_required",
+        "patterns": ["What documents are needed?", "Required files?", "Which documents for admission?"],
+        "responses": ["You will need your academic transcripts, proof of identity, and a recent photo. International students may need additional paperwork."]
+      },
+      {
+        "tag": "tuition_fees",
+        "patterns": ["What are the tuition fees?", "How much is a semester?", "Cost of studying"],
+        "responses": ["Tuition varies by program. Undergraduate tuition is approximately P34,000 per semester."]
+      },
+      {
+        "tag": "scholarship_info",
+        "patterns": ["Are scholarships available?", "How to apply for scholarship?", "Do you offer financial aid?"],
+        "responses": ["Yes! We offer merit-based and need-based scholarships. Applications are accepted through the student portal."]
+      }
+    ]
+  }
