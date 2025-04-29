@@ -42,3 +42,5 @@ async def chat_endpoint(request: Request):
 
     reply = assistant.process_message(message)
     return { "reply": reply }
+
+#uvicorn main:app --reload --host 0.0.0.0 --port 8000
