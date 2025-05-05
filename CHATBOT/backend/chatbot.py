@@ -87,7 +87,8 @@ class ChatbotAssistant:
                     self.vocabulary.extend(pattern_words)
                     self.documents.append((pattern_words, intent['tag']))
 
-                self.vocabulary = sorted(set(self.vocabulary))
+            self.vocabulary = sorted(set(self.vocabulary))
+        #print(f"Parsed pattern: {pattern_words} for intent: {intent['tag']}")
 
     def prepare_data(self):
         bags = []
@@ -163,22 +164,17 @@ class ChatbotAssistant:
         return random.choice(self.intents_responses.get(intent, ["I'm here to help!"]))
 
 
-def get_stocks():
-    stocks = ['APPL', 'META', 'NVDA', 'GS', 'MSFT']
-
-    print(random.sample(stocks, 3))
-
-
 if __name__ == '__main__':
 
     ###########################################################
-    #nltk.download('punkt_tab')
-    #nltk.download('wordnet')
+    nltk.download('punkt_tab')
+    nltk.download('wordnet')
 
     ###########################################################
 
-    #assistant = ChatbotAssistant('intents.json', function_mappings = {'stocks': get_stocks})
-    #assistant.parse_intents()
+    assistant = ChatbotAssistant('intents.json')
+    assistant.parse_intents()
+
     #assistant.prepare_data()
     #assistant.train_model(batch_size=8, lr=0.001, epochs=100)
 
@@ -186,14 +182,13 @@ if __name__ == '__main__':
 
     ############################################################
 
-    assistant = ChatbotAssistant('intents.json', function_mappings = {'stocks': get_stocks})
-    assistant.parse_intents()
+    
     assistant.load_model('chatbot_model.pth', 'dimensions.json')
 
     while True:
         message = input('Enter your message:')
 
-        if message == '/quit':
-            break
+        #if message == '/quit':
+        #    break
 
         print(assistant.process_message(message))

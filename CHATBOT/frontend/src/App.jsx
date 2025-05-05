@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
+import * as anime from "animejs";  // << Import anime.js here
 import "./App.css";
 
 export default function App() {
@@ -8,13 +9,17 @@ export default function App() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollToBottom();
   }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
     const userMsg = { sender: "user", text: input };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
 
     try {
@@ -25,25 +30,23 @@ export default function App() {
       });
       const data = await res.json();
       const botMsg = { sender: "bot", text: data.reply };
-      setMessages(prev => [...prev, botMsg]);
+      setMessages((prev) => [...prev, botMsg]);
     } catch (error) {
       console.error("Error fetching reply:", error);
     }
   };
 
-  const handleKeyPress = e => {
+  const handleKeyPress = (e) => {
     if (e.key === "Enter") sendMessage();
   };
 
   return (
     <div className="container">
       <div className="chatbox">
-        <div className="header">UB Enrollment Chatbot</div>
+        <div className="header">UBIBI Enrollment Chatbot</div>
         <div className="messages">
           {messages.map((msg, idx) => (
-            <div key={idx} className={msg.sender === "user" ? "message user" : "message bot"}>
-              {msg.text}
-            </div>
+            <ChatMessage key={idx} msg={msg} />
           ))}
           <div ref={messagesEndRef} />
         </div>
@@ -52,7 +55,7 @@ export default function App() {
             type="text"
             placeholder="Type your message..."
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             className="input"
           />
@@ -60,6 +63,18 @@ export default function App() {
             <Send size={20} />
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ChatMessage({ msg }) {
+  const isUser = msg.sender === "user";
+
+  return (
+    <div className={`message ${isUser ? "user" : "bot"}`}>
+      <div className="bubble">
+        {msg.text}
       </div>
     </div>
   );
