@@ -179,6 +179,7 @@ if __name__ == '__main__':
     #assistant.train_model(batch_size=8, lr=0.001, epochs=100)
 
     #assistant.save_model('chatbot_model.pth', 'dimensions.json')
+    #pip install fastapi uvicorn python-multipart PyPDF2 python-docx transformers tf-keras
 
     ############################################################
 

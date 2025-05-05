@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
-import * as anime from "animejs";  // << Import anime.js here
 import "./App.css";
 
 export default function App() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { sender: 'bot', text: "Hello! I'm here to help. You can chat or upload an essay for analysis." }
+  ]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
@@ -14,6 +15,35 @@ export default function App() {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch("http://localhost:8000/upload-essay", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await response.json();
+  
+      if (data.error) {
+        setMessages((prev) => [...prev, { sender: "bot", text: `❌ Error: ${data.error}` }]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "user", text: `📄 Uploaded essay: ${file.name}` },
+          { sender: "bot", text: `📝 Summary: ${data.summary}` },
+        ]);
+      }
+    } catch (error) {
+      setMessages((prev) => [...prev, { sender: "bot", text: `⚠️ Failed to upload essay.` }]);
+    }
   };
 
   const sendMessage = async () => {
@@ -50,18 +80,30 @@ export default function App() {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div className="input-area">
+        <div className="input-container">
           <input
             type="text"
-            placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="input"
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Type your message here..."
+            className="chat-input"
           />
-          <button onClick={sendMessage} className="send-button">
-            <Send size={20} />
+          <input
+            type="file"
+            id="file-upload"
+            accept=".pdf,.docx,.txt"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
+          <button
+            className="icon-button"
+            onClick={() => document.getElementById("file-upload").click()}
+            title="Upload Essay"
+          >
+            📎
           </button>
+          
         </div>
       </div>
     </div>
