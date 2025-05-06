@@ -1,23 +1,14 @@
 import os
-from fastapi import FastAPI, Request, File, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from chatbot import ChatbotAssistant
 from docx import Document
 from PyPDF2 import PdfReader
 from transformers import pipeline
+from essay_analysis import read_essay, summarize_essay, extract_keywords
 
-
-app = FastAPI()
-
-# CORS middleware setup
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Flask equivalent of add_middleware
 
 # Load chatbot model
 assistant = ChatbotAssistant(
@@ -29,64 +20,49 @@ assistant.load_model(
     dimensions_path=os.path.join(os.path.dirname(__file__), 'dimensions.json'),
 )
 
-class ChatRequest(BaseModel):
-    message: str
+@app.route("/chat", methods=["POST"])
+def chat_endpoint():
+    data = request.get_json()
+    message = data.get("message")
 
-@app.api_route("/chat", methods=["POST", "OPTIONS"])
-async def chat_endpoint(request: Request):
-    if request.method == "OPTIONS":
-        # CORS middleware will handle response
-        return
-
-    # If POST, parse the body
-    body = await request.json()
-    message = body.get("message")
     if not message:
-        return {"reply": "No message received."}
+        return jsonify({"reply": "No message received."}), 400
 
     reply = assistant.process_message(message)
-    return { "reply": reply }
+    return jsonify({"reply": reply})
 
-# Preload a summarizer (uses pretrained model, no training needed)
+# Essay summarizer pipeline
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-def extract_text_from_file(file: UploadFile) -> str:
-    ext = file.filename.split(".")[-1].lower()
+@app.route('/upload-essay', methods=['POST'])
+def upload_essay():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
 
-    if ext == "txt":
-        return file.file.read().decode("utf-8")
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
 
-    elif ext == "pdf":
-        reader = PdfReader(file.file)
-        return "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+    essay_text = read_essay(file)
+    summary = summarize_essay(essay_text)
+    suggested_courses = extract_keywords(summary)
 
-    elif ext == "docx":
-        contents = file.file.read()
-        with open("temp.docx", "wb") as f:
-            f.write(contents)
-        doc = Document("temp.docx")
-        os.remove("temp.docx")
-        return "\n".join([p.text for p in doc.paragraphs])
+    if suggested_courses:
+        response_text = (
+            f"Based on your essay, you seem interested in areas like technology or AI. "
+            f"You might consider the following programs: {', '.join(suggested_courses)}."
+        )
+    else:
+        response_text = (
+            "Thank you for your essay. Please make sure to specify your interests more clearly "
+            "for tailored course suggestions."
+        )
 
-    return "Unsupported file format."
+    return jsonify({
+        "summary": summary,
+        "suggested_courses": suggested_courses,
+        "response": response_text
+    })
 
-@app.post("/upload-essay")
-async def analyze_essay(file: UploadFile = File(...)):
-    try:
-        text = extract_text_from_file(file)
-
-        if len(text.strip()) == 0:
-            return {"error": "Document is empty."}
-
-        summary = summarizer(text, max_length=130, min_length=30, do_sample=False)[0]['summary_text']
-
-        return {
-            "filename": file.filename,
-            "summary": summary,
-            "char_count": len(text),
-            "message": "Essay successfully analyzed."
-        }
-    except Exception as e:
-        return {"error": str(e)} #error message
-
-#uvicorn main:app --reload --host 0.0.0.0 --port 8000
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
