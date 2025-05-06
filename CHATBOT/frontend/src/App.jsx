@@ -4,7 +4,7 @@ import "./App.css";
 
 export default function App() {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hello! I'm here to help. You can chat or upload an essay for analysis." }
+    { sender: "bot", text: "Hello! I'm here to help. You can chat or upload an essay in .txt, .pdf or .docx format for analysis." }
   ]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
