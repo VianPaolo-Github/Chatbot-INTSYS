@@ -108,9 +108,10 @@ def train_and_save_model(X, y, input_size, output_size, model_path, dimensions_p
 
 # Main pipeline
 if __name__ == "__main__":
-    intents_path = "../Chatbot-INTSYS/CHATBOT/backend/intents.json"
-    model_path = "../Chatbot-INTSYS/CHATBOT/backend/chatbot_model.pth"
-    dimensions_path = "../Chatbot-INTSYS/CHATBOT/backend/dimensions.json"
+    backend_dir = os.path.dirname(__file__)
+    intents_path = os.path.join(backend_dir, "intents.json")
+    model_path = os.path.join(backend_dir, "chatbot_model.pth")
+    dimensions_path = os.path.join(backend_dir, "dimensions.json")
 
     documents, vocabulary, all_tags = load_intents(intents_path)
     X, y = prepare_training_data(documents, vocabulary, all_tags)

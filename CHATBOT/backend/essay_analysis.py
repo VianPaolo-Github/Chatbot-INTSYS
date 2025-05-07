@@ -2,13 +2,32 @@ from transformers import pipeline
 import PyPDF2
 import docx
 
-# Simple course mapping
+# course mapping
 COURSE_SUGGESTIONS = {
-    "computer science": ["BSc in Computer Science", "BSc in IT", "BSc in Software Engineering"],
-    "machine learning": ["BSc in AI", "BSc in Data Science"],
-    "web development": ["BSc in Web Technologies"],
-    "cybersecurity": ["Diploma in Cybersecurity", "BSc in Network Engineering"],
-    "robotics": ["BSc in Mechatronics", "BSc in Robotics"],
+    "Business Administration": ["Bachelor of Science in Accountancy", "Bachelor of Science in Business Administration"], 
+    "Accountancy": ["Bachelor of Science in Accountancy", "Bachelor of Science in Business Administration"],
+
+    "Criminal Justice": ["Bachelor of Science in Criminology"],
+
+    "Public Safety": ["Bachelor of Science in Criminology"],
+
+    "Dentistry":["Doctor of Dental Medicine (DMD)"],
+
+    "Engineering":["Bachelor of Science in Architecture", "Bachelor of Science in Civil Engineering", "Bachelor of Science in Computer Engineering", "Bachelor of Science in Electrical Engineering", "Bachelor of Science in Electronics Engineering", "Bachelor of Science in Mechanical Engineering"],
+    "Architecture":["Bachelor of Science in Architecture", "Bachelor of Science in Civil Engineering", "Bachelor of Science in Computer Engineering", "Bachelor of Science in Electrical Engineering", "Bachelor of Science in Electronics Engineering", "Bachelor of Science in Mechanical Engineering"],
+    
+    "Information Technology":["Bachelor of Science in Computer Science", "Bachelor of Science in Information Technology"],
+
+    "International Hospitality & Tourism Management":["Bachelor of Science in Hospitality Management","Bachelor of Science in Tourism Management"],
+
+    "Law":["Bachelor of Laws (LL.B)"], 
+
+    "Natural Sciences":["Bachelor of Science in Biology","Bachelor of Science in Chemistry","Bachelor of Science in Psychology"], 
+
+    "Nursing":["Bachelor of Science in Nursing"],
+
+    "Teacher Education":["Bachelor of Elementary Education (BEEd)","Bachelor of Secondary Education (BSEd), multiple majors (English, Math, Science, Social Studies)","Bachelor of Arts in Communication Studies","Bachelor of Arts in English Language","Bachelor of Arts in Political Science"],
+    "Liberal Arts":["Bachelor of Elementary Education (BEEd)","Bachelor of Secondary Education (BSEd), multiple majors (English, Math, Science, Social Studies)","Bachelor of Arts in Communication Studies","Bachelor of Arts in English Language","Bachelor of Arts in Political Science"]
 }
 
 summarizer = pipeline("summarization")

@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, jsonify
+import json
+from flask import Flask, request, make_response
 from flask_cors import CORS
 from chatbot import ChatbotAssistant
 from docx import Document
@@ -8,7 +9,7 @@ from transformers import pipeline
 from essay_analysis import read_essay, summarize_essay, extract_keywords
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Flask equivalent of add_middleware
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # Load chatbot model
 assistant = ChatbotAssistant(
@@ -26,10 +27,10 @@ def chat_endpoint():
     message = data.get("message")
 
     if not message:
-        return jsonify({"reply": "No message received."}), 400
+        return json_response({"reply": "No message received."}, 400)
 
     reply = assistant.process_message(message)
-    return jsonify({"reply": reply})
+    return json_response({"reply": reply})
 
 # Essay summarizer pipeline
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
@@ -37,32 +38,49 @@ summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 @app.route('/upload-essay', methods=['POST'])
 def upload_essay():
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
+        return json_response({'error': 'No file part'}, 400)
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
+        return json_response({'error': 'No selected file'}, 400)
 
-    essay_text = read_essay(file)
-    summary = summarize_essay(essay_text)
-    suggested_courses = extract_keywords(summary)
+    try:
+        essay_text = read_essay(file)
+        summary = summarize_essay(essay_text)
+        suggested_courses = extract_keywords(summary)
 
-    if suggested_courses:
-        response_text = (
-            f"Based on your essay, you seem interested in areas like technology or AI. "
-            f"You might consider the following programs: {', '.join(suggested_courses)}."
-        )
-    else:
-        response_text = (
-            "Thank you for your essay. Please make sure to specify your interests more clearly "
-            "for tailored course suggestions."
-        )
+        if suggested_courses:
+            course_list = ", ".join(suggested_courses[:-1])
+            if len(suggested_courses) > 1:
+                course_list += f", and {suggested_courses[-1]}"
+            else:
+                course_list = suggested_courses[0]
 
-    return jsonify({
-        "summary": summary,
-        "suggested_courses": suggested_courses,
-        "response": response_text
-    })
+            response_text = (
+                f"It looks like you're interested in topics such as {course_list}. "
+                f"You might want to explore bachelor programs in {course_list}."
+            )
+        else:
+            response_text = (
+                "Thanks for your inquiry! I couldn’t detect specific topics, "
+                "but feel free to tell me more about your interests, and I’ll suggest a program."
+            )
+
+        return json_response({
+            "summary": summary,
+            "suggested_courses": suggested_courses,
+            "response": response_text
+        })
+
+    except Exception as e:
+        return json_response({'error': f"Failed to process essay: {str(e)}"}, 500)
+
+
+# 🔧 Custom response function with UTF-8-safe JSON
+def json_response(payload, status=200):
+    response = make_response(json.dumps(payload, ensure_ascii=False), status)
+    response.headers["Content-Type"] = "application/json; charset=utf-8"
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
