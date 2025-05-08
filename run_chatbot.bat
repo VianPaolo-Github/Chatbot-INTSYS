@@ -10,6 +10,7 @@ set BACKEND_DIR=%BASE_DIR%\chatbot\backend
 set FRONTEND_DIR=%BASE_DIR%\chatbot\frontend
 
 set BACKEND_CMD=python main.py
+set FRONTEND_INSTALL_CMD=npm install
 set FRONTEND_CMD=npm run dev
 
 REM Ports and URLs
@@ -34,8 +35,13 @@ if errorlevel 1 (
 )
 echo Backend is up!
 
+REM Install frontend dependencies first
+echo Installing frontend dependencies...
+cd /d "%FRONTEND_DIR%"
+call %FRONTEND_INSTALL_CMD%
+
 REM Now start frontend
-REM npm install
+
 start "UB Chatbot Frontend" cmd /k ^
     "cd /d "%FRONTEND_DIR%" && %FRONTEND_CMD%"
 

@@ -43,12 +43,12 @@
     {
       "tag": "location",
       "patterns": ["Where is the college located?", "College address?", "How do I get there?", "Campus location?", "Directions to the college?"],
-      "responses": ["Our college is located at 123 College Avenue, Citytown. You can find directions on our contact page."]
+      "responses": ["Our college is located at General Luna Road, Baguio City. You can find directions on our contact section in our main webpage."]
     },
     {
       "tag": "contact",
       "patterns": ["How can I contact admissions?", "Is there a phone number?", "Can I email the college?", "Support contact?", "How do I reach out?"],
-      "responses": ["You can contact us by email at admissions@college.edu or call (123) 456-7890."]
+      "responses": ["You can contact us by email at ub@e.ubaguio.edu or call (074) 442-3036."]
     },
     {
       "tag": "deadline",
