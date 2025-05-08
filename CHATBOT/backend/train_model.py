@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 # Download NLTK data (only needed once)
 nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('wordnet')
 
 # Tokenization and lemmatization

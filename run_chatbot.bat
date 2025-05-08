@@ -35,6 +35,7 @@ if errorlevel 1 (
 echo Backend is up!
 
 REM Now start frontend
+REM npm install
 start "UB Chatbot Frontend" cmd /k ^
     "cd /d "%FRONTEND_DIR%" && %FRONTEND_CMD%"
 
