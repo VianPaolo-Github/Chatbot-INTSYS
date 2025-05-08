@@ -3,6 +3,7 @@ import { Send } from "lucide-react";
 import "./App.css";
 
 export default function App() {
+  const API_BASE = "https://your-backend-url.com";
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hello! I'm here to help. You can chat or upload an enrollment inquiry in .txt, .pdf or .docx format for analysis." }
   ]);
